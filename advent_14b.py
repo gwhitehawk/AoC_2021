@@ -26,9 +26,6 @@ for i in range(40):
   for bigram in diff_counts:
     bigram_counts[bigram] += diff_counts[bigram]
 
-first_char = poly_input[0]
-last_char = poly_input[len(poly_input)-1]
-
 char_counts = dict()
 for key in bigram_counts:
   for c in key:
@@ -38,10 +35,7 @@ for key in bigram_counts:
       char_counts[c] += bigram_counts[key]
 
 for key in char_counts:
-  if key == first_char or key == last_char:
-    char_counts[key] = (char_counts[key] + 1)/2
-  else:
-    char_counts[key] = char_counts[key]/2
+  char_counts[key] = int((char_counts[key] + 1)/2)
 
 max_o = max(char_counts.values())
 min_o = min(char_counts.values())
