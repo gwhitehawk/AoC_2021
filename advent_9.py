@@ -18,24 +18,20 @@ class Position(object):
     self.i = i
     self.j = j
 
+  def compare(self, other):
+    if other.i >= 0 and other.j >= 0 and other.i < x and other.j < y:
+      if board[self.j][self.i] < board[other.j][other.i]:
+        return -1
+      elif board[self.j][self.i] == board[other.j][other.i]:
+        return 0
+      else:
+        return 1
 
-def compare_positions(p1, p2):
-  if p2.i >= 0 and p2.j >= 0 and p2.i < x and p2.j < y:
-    if board[p1.j][p1.i] < board[p2.j][p2.i]:
-      return -1
-    elif board[p1.j][p1.i] == board[p2.j][p2.i]:
-      return 0
-    else:
-      return 1
-
-  return -1
+  def get_index(self):
+    return 1000 * self.j + self.i
 
 
 to_low = dict()
-
-
-def make_index(p):
-  return 1000*p.j + p.i
 
 
 def get_position(index):
@@ -47,6 +43,8 @@ class Visited(object):
     self.position = position
     self.visited = visited
 
+# DFS for low point. Record path. Once low point found,
+# update all elements on path.
 def find_low(position):
   stack = LifoQueue(maxsize=0)
   stack.put(Visited(position, []))
@@ -57,7 +55,7 @@ def find_low(position):
     neighbors = [Position(p.i-1, p.j), Position(p.i+1, p.j), Position(p.i, p.j-1), Position(p.i, p.j+1)]
     low = True
     for n in neighbors:
-      c = compare_positions(p, n)
+      c = p.compare(n)
       if c == 1:
         stack.put(Visited(n, visited))
         low = False
@@ -65,19 +63,19 @@ def find_low(position):
         low = False
     if low:
       for path_p in visited:
-        to_low[make_index(path_p)] = p
+        to_low[path_p.get_index()] = p
 
 
 total = 0
 for j in range(y):
   for i in range(x):
     p = Position(i, j)
-    if board[j][i] < 9 and (make_index(p) not in to_low):
+    if board[j][i] < 9 and (p.get_index() not in to_low):
       find_low(p)
 
 sizes = {}
 for p in to_low:
-  ind = make_index(to_low[p])
+  ind = to_low[p].get_index()
   if ind not in sizes:
     sizes[ind] = 1
   else:

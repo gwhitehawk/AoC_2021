@@ -31,21 +31,34 @@ def init_map(garbled, current_map):
 
   for dig in range(10):
     if len(dig_to_wires[dig]) == len(garbled):
+      # if garbled digit length matches digit repr. length, map each segment
+      # to real segment possibilities (included segment to repr. segments,
+      # missing segment to complement of repr. segment set.
       for sym in dig_to_wires[8]:
         if sym in garbled:
           to_update = dig_to_wires[dig]
         else:
           to_update = dig_to_wires[8].difference(dig_to_wires[dig])
+        # if segment already has a restricted possible image set,
+        # only record intersection. E.g. if "a" newly appears to be in
+        # two-segment set, it must map to image of "1", previous larger
+        # image set is therefore restricted.
         if sym in current_map:
           intersects[sym].append(to_update.intersection(current_map[sym]))
         else:
           intersects[sym].append(to_update)
 
+  # We made assumption on garbled being any of the digits represented
+  # by the same number of segments. For each, we got possible mappings
+  # of each segment. We don't know which digit garbled maps to, take
+  # the union.
   for sym in garbled:
     current_map[sym] = set()
     for el in intersects[sym]:
       current_map[sym] = current_map[sym].union(el)
 
+# Try map all 7 segments. There are multiple possibilities for some
+# segments, consider all allowed mappings.
 def decode(real_inputs, current_map):
   q = queue.Queue(maxsize=0)
   q.put(dict())
@@ -63,6 +76,9 @@ def decode(real_inputs, current_map):
             q.put(new_map)
         break
 
+  # For each possibility, check that the assumed
+  # segment map defines valid 4 digits. When valid
+  # mapping is found, output it.
   for d in dicts:
     output = []
     for garbled in real_inputs:
@@ -80,6 +96,11 @@ def decode(real_inputs, current_map):
 def update_map(current_map):
   counter = 2
   while max([len(current_map[x]) for x in current_map]) > 1 and counter > 0:
+    # If union of images has the same size as union of preimages, there
+    # must be a bijection between the two sets in the resulting
+    # segment map. Given that there's a bijection, we can remove the segments
+    # in the image from the possible image sets corresponding to other segments
+    # than the considered preimages.
     for first in current_map:
       for second in current_map:
         un = current_map[first].union(current_map[second])
