@@ -52,7 +52,6 @@ def parse_packet(start):
   v = 0
   for i in range(current_index, current_index + 3):
     v = 2 * v + bits[i]
-  versions.append(v)
 
   t = 0
   for i in range(current_index + 3, current_index + 6):
