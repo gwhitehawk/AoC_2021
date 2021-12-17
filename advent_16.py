@@ -3,7 +3,7 @@ import math
 with open("advent_16.txt") as f:
   raw = f.readline().strip()
 
-# raw = "C200B40A82"
+#raw = "C200B40A82"
 bits = []
 for c in raw:
   bin_str = bin(int(c, 16))[2:]
@@ -12,7 +12,6 @@ for c in raw:
     bin_str = '0' + bin_str
   for b in bin_str:
     bits.append(int(b))
-
 
 def parse_literal(start):
   current_index = start
